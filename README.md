@@ -14,6 +14,10 @@ Create an admin user and promote to ADMIN:
 sudo docker compose exec web python manage.py createsuperuser
 sudo docker compose exec web python manage.py shell -c "from django.contrib.auth import get_user_model as g; U=g(); u=U.objects.get(is_superuser=True); u.role='ADMIN'; u.save(); print('Promoted to ADMIN')"
 ```
+## Live Link
+```
+https://infocentree.com
+```
 
 ## JWT Auth
 - `/api/auth/token/` and `/api/auth/token/refresh/`
