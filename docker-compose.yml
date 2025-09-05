@@ -1,0 +1,30 @@
+services:
+  web:
+    build: .
+    ports: ["8000:8000"]
+    env_file: [.env]
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+  neo4j:
+    image: neo4j:5.22
+    environment:
+      - NEO4J_AUTH=neo4j/neo4j_password
+      - NEO4J_dbms_security_auth__minimum__password__length=6
+      - NEO4J_server_config_strict__validation_enabled=false
+    ports: ["7474:7474","7687:7687"]
+    healthcheck:
+      test: ["CMD","bash","-c","cypher-shell -u neo4j -p neo4j_password 'RETURN 1' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+    volumes:
+      - neo4j_data:/data
+volumes:
+  neo4j_data:
